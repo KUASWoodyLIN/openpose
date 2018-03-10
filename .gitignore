@@ -106,6 +106,9 @@ distribute/
 # Camera parameters
 *.xml
 
+######################### vscode Files ######################
+.vscode
+
 ######################### Compilation (build, distribute & bins) Files / Folders #########################
 *.bin
 *.testbin

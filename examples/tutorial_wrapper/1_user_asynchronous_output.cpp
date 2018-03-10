@@ -243,6 +243,35 @@ public:
             op::log("Nullptr or empty datumsPtr found.", op::Priority::High, __LINE__, __FUNCTION__, __FILE__);
         return (key == 27);
     }
+    bool display_gesture(const std::shared_ptr<std::vector<UserDatum>>& datumsPtr)
+    {
+        // User's displaying/saving/other processing here
+            // datum.cvOutputData: rendered frame with pose or heatmaps
+            // datum.poseKeypoints: Array<float> with the estimated pose
+        char key = ' ';
+        if (datumsPtr != nullptr && !datumsPtr->empty())
+        {
+            cv:Mat img(1280, 720, CV_8U, Scalar(0,0,0))
+            for (auto person = 0 ; person < poseKeypoints.getSize(0) ; person++)
+            {
+                for (auto bodyPart = 0 ; bodyPart < poseKeypoints.getSize(1) ; bodyPart++)
+                {
+                    for (auto xyscore = 0 ; xyscore < poseKeypoints.getSize(2) ; xyscore++)
+                    {
+                        // cv:circle(img)
+                    }
+                }
+            }
+
+            cv::imshow("Gesture mask", img);
+            // Display image and sleeps at least 1 ms (it usually sleeps ~5-10 msec to display the image)
+            key = (char)cv::waitKey(1);
+        }
+        else
+            op::log("Nullptr or empty datumsPtr found.", op::Priority::High, __LINE__, __FUNCTION__, __FILE__);
+        op::log("PoseKeypoints Size" + std::to_string(poseKeypoints.getSize()))
+        return (key == 27);
+    }
     void printKeypoints(const std::shared_ptr<std::vector<UserDatum>>& datumsPtr)
     {
         // Example: How to use the pose keypoints
