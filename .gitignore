@@ -134,3 +134,9 @@ html/
 
 ######################### Validation Scripts & Testing #########################
 output*/
+
+########################
+CachedData/
+Cache/
+Backups/
+logs/

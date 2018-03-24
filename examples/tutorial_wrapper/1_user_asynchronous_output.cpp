@@ -251,25 +251,38 @@ public:
         char key = ' ';
         if (datumsPtr != nullptr && !datumsPtr->empty())
         {
-            cv:Mat img(1280, 720, CV_8U, Scalar(0,0,0))
+            cv::Mat img(720, 1280, CV_8UC3, cv::Scalar(255,255,255));
+
+            // Accesing each element of the keypoints
+            const auto& poseKeypoints = datumsPtr->at(0).poseKeypoints;
             for (auto person = 0 ; person < poseKeypoints.getSize(0) ; person++)
             {
-                for (auto bodyPart = 0 ; bodyPart < poseKeypoints.getSize(1) ; bodyPart++)
+
+                int left_hand_x = poseKeypoints[{person, 7, 0}];
+                int left_hand_y = poseKeypoints[{person, 7, 1}];
+                float left_hand_score = poseKeypoints[{person, 7, 2}];
+                int right_hand_x = poseKeypoints[{person, 4, 0}];
+                int right_hand_y = poseKeypoints[{person, 4, 1}];
+                float right_hand_score = poseKeypoints[{person, 4, 2}];
+                if(left_hand_score > 0.3)
                 {
-                    for (auto xyscore = 0 ; xyscore < poseKeypoints.getSize(2) ; xyscore++)
-                    {
-                        // cv:circle(img)
-                    }
+                    cv::circle(img, cv::Point(left_hand_x, left_hand_y), 15, cv::Scalar(0,0,255), -1);
+                    op::log("Left hand: " + std::to_string(left_hand_x) + " " + std::to_string(left_hand_y) + " " + std::to_string(left_hand_score));
+                }
+
+                if(right_hand_score > 0.3)
+                {
+                    cv::circle(img, cv::Point(right_hand_x, right_hand_y), 15, cv::Scalar(0,255,0), -1);
+                    op::log("Right hand: " + std::to_string(right_hand_x) + " " + std::to_string(right_hand_y) + " " + std::to_string(right_hand_score));
                 }
             }
-
+            op::log("PoseKeypoints Size: " + std::to_string(poseKeypoints.getSize(2)));
             cv::imshow("Gesture mask", img);
             // Display image and sleeps at least 1 ms (it usually sleeps ~5-10 msec to display the image)
             key = (char)cv::waitKey(1);
         }
         else
             op::log("Nullptr or empty datumsPtr found.", op::Priority::High, __LINE__, __FUNCTION__, __FILE__);
-        op::log("PoseKeypoints Size" + std::to_string(poseKeypoints.getSize()))
         return (key == 27);
     }
     void printKeypoints(const std::shared_ptr<std::vector<UserDatum>>& datumsPtr)
@@ -429,6 +442,7 @@ int openPoseTutorialWrapper1()
         if (opWrapper.waitAndPop(datumProcessed))
         {
             userWantsToExit = userOutputClass.display(datumProcessed);;
+            userWantsToExit = (userWantsToExit | userOutputClass.display_gesture(datumProcessed));
             userOutputClass.printKeypoints(datumProcessed);
         }
         else
